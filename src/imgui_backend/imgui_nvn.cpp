@@ -1,11 +1,12 @@
 #include "imgui_nvn.h"
+#include "helpers/InputHelper.h"
 #include "imgui_backend/imgui_impl_nvn.hpp"
+#include "imgui_backend_config.h"
 #include "init.h"
 #include "lib.hpp"
 #include "logger/Logger.hpp"
-#include "helpers/InputHelper.h"
-#include "nvn_CppFuncPtrImpl.h"
 #include "nn/fs.h"
+#include "nvn_CppFuncPtrImpl.h"
 
 nvn::Device *nvnDevice;
 nvn::Queue *nvnQueue;
@@ -27,13 +28,12 @@ nvn::CommandBufferSetTexturePoolFunc tempCommandSetTexturePoolFunc;
 nvn::CommandBufferSetSamplerPoolFunc tempCommandSetSamplerPoolFunc;
 
 bool hasInitImGui = false;
+int commandBufferCount = 0;
 
 namespace nvnImGui {
   ImVector<ProcDrawFunc> drawQueue;
   ImVector<InitFunc> initQueue;
 }
-
-#define IMGUI_USEEXAMPLE_DRAW true // TODO xeno
 
 void setTexturePool(nvn::CommandBuffer *cmdBuf, const nvn::TexturePool *pool) {
   __cmdBuf = cmdBuf;
@@ -97,14 +97,13 @@ NVNboolean queueInit(nvn::Queue *queue, const nvn::QueueBuilder *builder) {
   return result;
 }
 
-bool encountered = false;
 
 NVNboolean cmdBufInit(nvn::CommandBuffer *buffer, nvn::Device *device) {
   NVNboolean result = tempBufferInitFuncPtr(buffer, device);
 
   if (!hasInitImGui) {
-    if (!encountered) {
-      encountered = true;
+    // XENO: wait for the right command buffer
+    if (commandBufferCount++ != IMGUI_XENO_COMMAND_BUFFER_ID) {
       return result;
     }
     nvnCmdBuf = buffer;
@@ -115,8 +114,6 @@ NVNboolean cmdBufInit(nvn::CommandBuffer *buffer, nvn::Device *device) {
 }
 
 nvn::GenericFuncPtrFunc getProc(nvn::Device *device, const char *procName) {
-  Logger::log("Calling getProc : %s", procName);
-
   nvn::GenericFuncPtrFunc ptr = tempGetProcAddressFuncPtr(nvnDevice, procName);
 
   if (strcmp(procName, "nvnQueueInitialize") == 0) {
@@ -217,8 +214,6 @@ bool nvnImGui::InitImGui() {
 
     IMGUI_CHECKVERSION();
 
-    Logger::log("Checked ImGui version.\n");
-
     ImGuiMemAllocFunc allocFunc = [](size_t size, void *user_data) {
       return nn::init::GetAllocator()->Allocate(size);
     };
@@ -227,19 +222,13 @@ bool nvnImGui::InitImGui() {
       nn::init::GetAllocator()->Free(ptr);
     };
 
-    Logger::log("Inited Imgui alloc funs.\n");
-
     ImGui::SetAllocatorFunctions(allocFunc, freeFunc, nullptr);
 
-    Logger::log("Set ImGui Allocator FNs ver 3.\n");
-
     ImGui::CreateContext();
-    Logger::log("Created ImGui ctx .\n");
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
 
     ImGui::StyleColorsDark();
-    Logger::log("Creating ImGui style.\n");
 
     ImguiNvnBackend::NvnBackendInitInfo initInfo = {
         .device = nvnDevice,
@@ -247,25 +236,20 @@ bool nvnImGui::InitImGui() {
         .cmdBuf = nvnCmdBuf
     };
 
-    Logger::log("Mounting SD Card.\n");
-    /*if (nn::fs::MountSdCardForDebug("sd").isFailure()) {
-      Logger::log("Unable to Mount SD!\n");
-      return false;
-    }*/
     Logger::log("Initializing Backend.\n");
 
     ImguiNvnBackend::InitBackend(initInfo);
 
     InputHelper::initKBM();
 
-    InputHelper::setPort(0); // set input helpers default port to zero
-
+    // set input helpers default port
+    InputHelper::setPort(IMGUI_XENO_DEFAULT_INPUT_PORT);
 
     for (auto init: initQueue) {
       init();
     }
 
-#if IMGUI_USEEXAMPLE_DRAW
+#if IMGUI_XENO_DRAW_DEMO
     addDrawFunc([]() { ImGui::ShowDemoWindow(); });
 #endif
 

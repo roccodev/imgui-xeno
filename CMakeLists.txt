@@ -10,7 +10,7 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 23)
 
 ## ImGui user config
-add_compile_definitions(IMGUI_USER_CONFIG="imgui_backend/nvn_imgui_config.h")
+add_compile_definitions(IMGUI_USER_CONFIG="imgui_user_config.h")
 
 ## Project sources
 include_directories(${PROJECT_SOURCE_DIR}/src_framework/lib)
@@ -22,6 +22,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/extern/imgui)
 include_directories(${PROJECT_SOURCE_DIR}/fonts/precompiled)
 include_directories(${PROJECT_SOURCE_DIR}/shaders/precompiled)
+include_directories(${PROJECT_SOURCE_DIR}/user_config)
 
 file(GLOB_RECURSE SOURCES_ASM
         ${PROJECT_SOURCE_DIR}/src/*.s
@@ -40,6 +41,7 @@ file(GLOB_RECURSE LOCAL_LIBRARIES ${PROJECT_SOURCE_DIR}/libs/*.a)
 
 file(GLOB SOURCES_H ${PROJECT_SOURCE_DIR}/fonts/precompiled/*.h)
 file(GLOB SOURCES_H ${PROJECT_SOURCE_DIR}/shaders/precompiled/*.h)
+file(GLOB SOURCES_H ${PROJECT_SOURCE_DIR}/user_config/*.h)
 
 ## Include nx tools
 include(${CMAKE_SOURCE_DIR}/cmake/SwitchTools.cmake)

@@ -1,6 +1,6 @@
 #pragma once
 
-#define IMGUI_USER_CONFIG "imgui_backend/nvn_imgui_config.h"
+#define IMGUI_USER_CONFIG "imgui_user_config.h"
 
 #include "ImguiShaderCompiler.h"
 #include "imgui.h"

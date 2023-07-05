@@ -1,9 +1,9 @@
-#include <cmath>
 #include "imgui_impl_nvn.hpp"
 #include "imgui_hid_mappings.h"
-#include "lib.hpp"
 #include "helpers.h"
+#include "lib.hpp"
 #include "logger/Logger.hpp"
+#include <cmath>
 
 #include "nn/os.h"
 #include "nn/hid.h"
