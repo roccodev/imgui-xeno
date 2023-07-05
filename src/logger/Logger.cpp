@@ -1,8 +1,11 @@
 #include "Logger.hpp"
 #include "lib.hpp"
 #include "nifm.h"
+#include "nx/kernel/svc.h"
 #include "socket.h"
 #include "util.h"
+
+#include <cstring>
 
 #define ISEMU true
 
@@ -63,6 +66,11 @@ nn::Result Logger::init(const char *ip, u16 port) {
   return result;
 }
 
+__attribute__((noinline)) void outputDebugString(const char *buf, size_t len) {
+  asm("svc 0x27");
+}
+
+
 void Logger::log(const char *fmt, ...) {
 
   if (instance().mState != LoggerState::CONNECTED && !ISEMU)
@@ -76,7 +84,7 @@ void Logger::log(const char *fmt, ...) {
   if (nn::util::VSNPrintf(buffer, sizeof(buffer), fmt, args) > 0) {
 
     if (ISEMU) {
-      svcOutputDebugString(buffer, strlen(buffer));
+      outputDebugString(buffer, strlen(buffer));
     } else {
       nn::socket::Send(instance().mSocketFd, buffer, strlen(buffer), 0);
     }

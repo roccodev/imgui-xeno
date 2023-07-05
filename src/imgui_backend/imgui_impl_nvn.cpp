@@ -475,8 +475,6 @@ namespace ImguiNvnBackend {
         Logger::log("Failed to Setup Render Data!\n");
       }
     }
-
-    loadIni();
   }
 
   void ShutdownBackend() {
@@ -555,10 +553,6 @@ namespace ImguiNvnBackend {
     InputHelper::updatePadState(); // update input helper
 
     updateInput(); // update backend inputs
-
-    if (io.WantSaveIniSettings) {
-      saveIni();
-    }
   }
 
   void setRenderStates() {
@@ -715,9 +709,8 @@ namespace ImguiNvnBackend {
           continue;
 
         bd->cmdBuf->SetViewport(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-//                bd->cmdBuf->SetScissor((int) clip_min.x, (int) clip_min.y,
-//                                       (int) clip_size.x, (int) clip_size.y);
-        bd->cmdBuf->SetScissor(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+        bd->cmdBuf->SetScissor((int) clip_min.x, (int) clip_min.y,(int) clip_size.x, (int) clip_size.y);
+        //bd->cmdBuf->SetScissor(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
         // get texture ID from the command
         nvn::TextureHandle TexID = *(nvn::TextureHandle *) cmd.GetTexID();

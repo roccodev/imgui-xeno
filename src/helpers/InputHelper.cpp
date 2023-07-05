@@ -1,5 +1,4 @@
 #include "InputHelper.h"
-#include "diag/assert.hpp"
 #include "logger/Logger.hpp"
 
 static const char *styleNames[] = {
@@ -30,7 +29,7 @@ nn::hid::MouseState InputHelper::prevMouseState{};
 
 ulong InputHelper::selectedPort = -1;
 bool InputHelper::isReadInput = true;
-bool InputHelper::toggleInput = false;
+bool InputHelper::toggleInput = true;
 
 const char *getStyleName(nn::hid::NpadStyleSet style) {
 

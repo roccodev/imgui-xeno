@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <nx/types.h>
 #include <nn/util.h>
 
 namespace nn {

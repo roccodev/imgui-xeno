@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include <nx/types.h>
 #include <type_traits>
 
 namespace nn {

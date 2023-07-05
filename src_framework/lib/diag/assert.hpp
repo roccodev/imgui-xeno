@@ -17,7 +17,7 @@
 #pragma once
 
 #include "abort.hpp"
-#include "program/setting.hpp"
+#include "logger/Logger.hpp"
 
 #ifdef EXL_DEBUG
 
@@ -30,7 +30,10 @@
 #else
 
 #define EXL_CALL_ASSERT_FAIL_IMPL(cond, ...) ::exl::diag::AssertionFailureImpl(NULL, 0, NULL, NULL, 0, ## __VA_ARGS__)
-#define EXL_CALL_ABORT_IMPL(cond, value, ...)  ::exl::diag::AbortImpl(NULL, 0, NULL, NULL, value, ## __VA_ARGS__)
+#define EXL_CALL_ABORT_IMPL(cond, value, ...)  ({ \
+    ::Logger::log(value, ## __VA_ARGS__);         \
+    int a = *(int*)(0);                                              \
+}); // TODO xeno
 
 #define EXL_UNREACHABLE_DEFAULT_CASE() default: EXL_CALL_ABORT_IMPL(NULL, 0)
 #define EXL_ABORT(value, ...) EXL_CALL_ABORT_IMPL("", value, ## __VA_ARGS__)
@@ -41,7 +44,7 @@
 #define EXL_ASSERT_IMPL(expr, ...)                                                                            \
     ({                                                                                                        \
         if (!(static_cast<bool>(expr))) { \
-            EXL_CALL_ASSERT_FAIL_IMPL(#expr, ## __VA_ARGS__);                                                 \
+            EXL_ABORT(#expr, ## __VA_ARGS__);                                                 \
         }                                                                                                     \
     })
 

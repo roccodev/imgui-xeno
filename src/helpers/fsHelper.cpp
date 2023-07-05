@@ -1,7 +1,8 @@
 #include "fsHelper.h"
-#include "logger/Logger.hpp"
 #include "diag/assert.hpp"
 #include "init.h"
+#include "logger/Logger.hpp"
+#include "nx/abort.h"
 
 namespace FsHelper {
   nn::Result createDirectory(const char *path) {

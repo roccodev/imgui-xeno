@@ -1,7 +1,6 @@
 #pragma once
 
 #include <nn/nn_common.hpp>
-#include <nx/types.h>
 
 namespace nn::fs {
 
@@ -23,8 +22,8 @@ namespace nn::fs {
 
     /* Bitfield to define the kinds of entries to open from a directory. */
     enum OpenDirectoryMode : u8 {
-        OpenDirectoryMode_Directory = BIT(0),
-        OpenDirectoryMode_File = BIT(1),
+        OpenDirectoryMode_Directory = 1 << 0,
+        OpenDirectoryMode_File = 1 << 1,
 
         OpenDirectoryMode_All = OpenDirectoryMode_Directory | OpenDirectoryMode_File,
     };
@@ -42,9 +41,9 @@ namespace nn::fs {
 
     /* Mode for opening files. */
     enum OpenMode {
-        OpenMode_Read = BIT(0),
-        OpenMode_Write = BIT(1),
-        OpenMode_Append = BIT(2),
+        OpenMode_Read = 1 << 0,
+        OpenMode_Write = 1 << 1,
+        OpenMode_Append = 1 << 2,
 
         OpenMode_ReadWrite = OpenMode_Read | OpenMode_Write,
     };

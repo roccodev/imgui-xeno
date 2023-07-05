@@ -33,7 +33,7 @@ namespace nvnImGui {
   ImVector<InitFunc> initQueue;
 }
 
-#define IMGUI_USEEXAMPLE_DRAW false
+#define IMGUI_USEEXAMPLE_DRAW true // TODO xeno
 
 void setTexturePool(nvn::CommandBuffer *cmdBuf, const nvn::TexturePool *pool) {
   __cmdBuf = cmdBuf;
@@ -97,11 +97,17 @@ NVNboolean queueInit(nvn::Queue *queue, const nvn::QueueBuilder *builder) {
   return result;
 }
 
+bool encountered = false;
+
 NVNboolean cmdBufInit(nvn::CommandBuffer *buffer, nvn::Device *device) {
   NVNboolean result = tempBufferInitFuncPtr(buffer, device);
-  nvnCmdBuf = buffer;
 
   if (!hasInitImGui) {
+    if (!encountered) {
+      encountered = true;
+      return result;
+    }
+    nvnCmdBuf = buffer;
     hasInitImGui = nvnImGui::InitImGui();
   }
 
@@ -109,6 +115,7 @@ NVNboolean cmdBufInit(nvn::CommandBuffer *buffer, nvn::Device *device) {
 }
 
 nvn::GenericFuncPtrFunc getProc(nvn::Device *device, const char *procName) {
+  Logger::log("Calling getProc : %s", procName);
 
   nvn::GenericFuncPtrFunc ptr = tempGetProcAddressFuncPtr(nvnDevice, procName);
 
@@ -147,65 +154,22 @@ void disableButtons(nn::hid::NpadBaseState *state) {
   }
 }
 
-HOOK_DEFINE_TRAMPOLINE(DisableFullKeyState) {
-  static int Callback(int *unkInt, nn::hid::NpadFullKeyState *state, int count, uint const &port) {
-    int result = Orig(unkInt, state, count, port);
-    disableButtons(state);
-    return result;
+void* nvnImGui::NvnBootstrapHook(const char *funcName, OrigNvnBootstrap origFn) {
+  void *result = origFn(funcName);
+
+  Logger::log("Getting Proc from Bootstrap: %s\n", funcName);
+
+  if (strcmp(funcName, "nvnDeviceInitialize") == 0) {
+    tempDeviceInitFuncPtr = (nvn::DeviceInitializeFunc) result;
+    return (void *) &deviceInit;
   }
-};
-
-HOOK_DEFINE_TRAMPOLINE(DisableHandheldState) {
-  static int Callback(int *unkInt, nn::hid::NpadHandheldState *state, int count, uint const &port) {
-    int result = Orig(unkInt, state, count, port);
-    disableButtons(state);
-    return result;
+  if (strcmp(funcName, "nvnDeviceGetProcAddress") == 0) {
+    tempGetProcAddressFuncPtr = (nvn::DeviceGetProcAddressFunc) result;
+    return (void *) &getProc;
   }
-};
 
-HOOK_DEFINE_TRAMPOLINE(DisableJoyDualState) {
-  static int Callback(int *unkInt, nn::hid::NpadJoyDualState *state, int count, uint const &port) {
-    int result = Orig(unkInt, state, count, port);
-    disableButtons(state);
-    return result;
-  }
-};
-
-HOOK_DEFINE_TRAMPOLINE(DisableJoyLeftState) {
-  static int Callback(int *unkInt, nn::hid::NpadJoyLeftState *state, int count, uint const &port) {
-    int result = Orig(unkInt, state, count, port);
-    disableButtons(state);
-    return result;
-  }
-};
-
-HOOK_DEFINE_TRAMPOLINE(DisableJoyRightState) {
-  static int Callback(int *unkInt, nn::hid::NpadJoyRightState *state, int count, uint const &port) {
-    int result = Orig(unkInt, state, count, port);
-    disableButtons(state);
-    return result;
-  }
-};
-
-HOOK_DEFINE_TRAMPOLINE(NvnBootstrapHook) {
-  static void *Callback(const char *funcName) {
-
-    void *result = Orig(funcName);
-
-    Logger::log("Getting Proc from Bootstrap: %s\n", funcName);
-
-    if (strcmp(funcName, "nvnDeviceInitialize") == 0) {
-      tempDeviceInitFuncPtr = (nvn::DeviceInitializeFunc) result;
-      return (void *) &deviceInit;
-    }
-    if (strcmp(funcName, "nvnDeviceGetProcAddress") == 0) {
-      tempGetProcAddressFuncPtr = (nvn::DeviceGetProcAddressFunc) result;
-      return (void *) &getProc;
-    }
-
-    return result;
-  }
-};
+  return result;
+}
 
 void nvnImGui::addDrawFunc(ProcDrawFunc func) {
 
@@ -221,7 +185,6 @@ void nvnImGui::addInitFunc(InitFunc func) {
 }
 
 void nvnImGui::procDraw() {
-
   ImguiNvnBackend::newFrame();
   ImGui::NewFrame();
   ImGui::GetIO().MouseDrawCursor = InputHelper::toggleInput;
@@ -238,20 +201,23 @@ void nvnImGui::procDraw() {
 }
 
 void nvnImGui::InstallHooks() {
-  NvnBootstrapHook::InstallAtSymbol("nvnBootstrapLoader");
+  //NvnBootstrapHook::InstallAtSymbol("nvnBootstrapLoader"); // TODO xeno
+  /*
   DisableFullKeyState::InstallAtSymbol("_ZN2nn3hid6detail13GetNpadStatesEPiPNS0_16NpadFullKeyStateEiRKj");
   DisableHandheldState::InstallAtSymbol("_ZN2nn3hid6detail13GetNpadStatesEPiPNS0_17NpadHandheldStateEiRKj");
   DisableJoyDualState::InstallAtSymbol("_ZN2nn3hid6detail13GetNpadStatesEPiPNS0_16NpadJoyDualStateEiRKj");
   DisableJoyLeftState::InstallAtSymbol("_ZN2nn3hid6detail13GetNpadStatesEPiPNS0_16NpadJoyLeftStateEiRKj");
-  DisableJoyRightState::InstallAtSymbol("_ZN2nn3hid6detail13GetNpadStatesEPiPNS0_17NpadJoyRightStateEiRKj");
+  DisableJoyRightState::InstallAtSymbol("_ZN2nn3hid6detail13GetNpadStatesEPiPNS0_17NpadJoyRightStateEiRKj");*/ // TODO xeno
 }
 
 bool nvnImGui::InitImGui() {
   if (nvnDevice && nvnQueue && nvnCmdBuf) {
 
-    Logger::log("Creating ImGui.\n");
+    Logger::log("Creating ImGui with Ver.\n");
 
     IMGUI_CHECKVERSION();
+
+    Logger::log("Checked ImGui version.\n");
 
     ImGuiMemAllocFunc allocFunc = [](size_t size, void *user_data) {
       return nn::init::GetAllocator()->Allocate(size);
@@ -261,13 +227,19 @@ bool nvnImGui::InitImGui() {
       nn::init::GetAllocator()->Free(ptr);
     };
 
+    Logger::log("Inited Imgui alloc funs.\n");
+
     ImGui::SetAllocatorFunctions(allocFunc, freeFunc, nullptr);
 
+    Logger::log("Set ImGui Allocator FNs ver 3.\n");
+
     ImGui::CreateContext();
+    Logger::log("Created ImGui ctx .\n");
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
 
     ImGui::StyleColorsDark();
+    Logger::log("Creating ImGui style.\n");
 
     ImguiNvnBackend::NvnBackendInitInfo initInfo = {
         .device = nvnDevice,
@@ -276,10 +248,10 @@ bool nvnImGui::InitImGui() {
     };
 
     Logger::log("Mounting SD Card.\n");
-    if (nn::fs::MountSdCardForDebug("sd").isFailure()) {
+    /*if (nn::fs::MountSdCardForDebug("sd").isFailure()) {
       Logger::log("Unable to Mount SD!\n");
       return false;
-    }
+    }*/
     Logger::log("Initializing Backend.\n");
 
     ImguiNvnBackend::InitBackend(initInfo);
@@ -294,7 +266,7 @@ bool nvnImGui::InitImGui() {
     }
 
 #if IMGUI_USEEXAMPLE_DRAW
-    addDrawFunc([]() {ImGui::ShowDemoWindow();});
+    addDrawFunc([]() { ImGui::ShowDemoWindow(); });
 #endif
 
     return true;
