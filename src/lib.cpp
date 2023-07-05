@@ -1,8 +1,13 @@
 #include "imgui_backend/imgui_nvn.h"
+#include "imgui_backend_config.h"
 #include "logger/Logger.hpp"
+#include "nx/abort.h"
 
 extern "C" void imgui_nvn_init(nvnImGui::InitFunc init, nvnImGui::ProcDrawFunc renderCallback) {
-  Logger::log("Initing imgui nvn");
+  if (IMGUI_XENO_LOG_TCP) {
+    R_ABORT_UNLESS(Logger::instance().init(IMGUI_XENO_LOG_TCP_IP, IMGUI_XENO_LOG_TCP_PORT))
+  }
+
   nvnImGui::addInitFunc(init);
   nvnImGui::InstallHooks();
   nvnImGui::addDrawFunc(renderCallback);
