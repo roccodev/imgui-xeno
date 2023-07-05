@@ -1,6 +1,6 @@
 #include "Logger.hpp"
 #include "imgui_backend_config.h"
-#include "lib.hpp"
+#include "imgui_xeno.hpp"
 #include "nifm.h"
 #include "nx/kernel/svc.h"
 #include "socket.h"
@@ -8,7 +8,9 @@
 
 #include <cstring>
 
+#if IMGUI_XENO_LOG_TCP
 char socketPool[0x600000 + 0x20000] __attribute__((aligned(0x1000)));
+#endif
 
 Logger &Logger::instance() {
   static Logger instance;
@@ -31,7 +33,9 @@ nn::Result Logger::init(const char *ip, u16 port) {
 
   nn::nifm::Initialize();
 
+#if IMGUI_XENO_LOG_TCP
   nn::socket::Initialize(socketPool, 0x600000, 0x20000, 0xE);
+#endif
 
   nn::nifm::SubmitNetworkRequest();
 
