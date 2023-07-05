@@ -1,4 +1,4 @@
-// File: 'scripts/fonts-shrunk/JetBrainsMonoNL-Regular.ttf' (17896 bytes)
+// File: 'fonts/JetBrainsMonoNL-Regular-Shrunk.ttf' (17896 bytes)
 // Exported using binary_to_compressed_c.cpp
 static const unsigned int JetBrainsMonoNL_compressed_size = 13694;
 static const unsigned int JetBrainsMonoNL_compressed_data[13696/4] =

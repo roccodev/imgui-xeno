@@ -11,8 +11,8 @@
 #include "helpers/InputHelper.h"
 #include "MemoryPoolMaker.h"
 
-#include "files/imgui_shader.h"
-#include "files/JetBrainsMonoNL-Regular.h"
+#include "imgui_shader.h"
+#include "JetBrainsMonoNL-Regular.h"
 #include "init.h"
 
 #define UBOSIZE 0x1000
