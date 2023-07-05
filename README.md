@@ -1,30 +1,99 @@
-# mp1r-practice-mod
+# imgui-xeno: Dear ImGui backend for Xenoblade games
 
-MP1 remastered practice mod
+A Dear ImGui backend that leverages NVN to support multiple Switch games.
 
-## Installation instructions:
+## Main Credits
 
-Download the latest release from [the releases page](https://github.com/MetroidPrimeModding/mp1r-practice-mod/releases).
+This implementation is a fork of [mp1r-practice-mod](https://github.com/MetroidPrimeModding/mp1r-practice-mod).   
+In particular, it extracts [CraftyBoss](https://github.com/CraftyBoss)'s original NVN backend for use in other games.
 
-Put the files from the zip in the following location:
-- ryujinx (right click->open mods directory)
-  - `mods/contents/010012101468C000/exefs/`
-- atmosphere (modded switch): 
-  - `atmosphere/contents/010012101468C000/exefs`
+## API usage
 
-## Controls:
-- Open menu: `Left stick + right stick click`
-- Save position: `R + ZR + D-Down` or `Right stick click + D-Down`
-- Load position: `R + ZR + D-Up` or `Right stick click + D-Up`
-- With menu open:
-  - Move cursor: `dpad`
-  - select/move windows: `hold Y` 
-    - while holding, `L` and `R` scroll through windows
-  - If position editor is enabled:
-    - position edit: `hold ZR + left stick/right stick`
-    - move faster: `hold ZL`
+This backend should be exported as a static library, for use in other modding projects.  
+It is not recommended to use this repository as a base.
 
-# Credits
+**The backend is also meant to be launcher-agnostic**, meaning it can be used on all environments with access
+to the NNSDK API: Skyline, exlaunch, etc.
+
+### Example
+
+```c
+#include <imgui_xeno.h>
+#include <imgui.h>
+
+void ImGuiRenderCallback() {
+    // For example, render the demo window
+    ImGui::ShowDemoWindow();
+}
+
+void ImGuiInitCallback() {}
+
+// Create a hook with your launcher of choice (e.g. skyline, exlaunch...)
+// Replace the function "nvnBootstrap" which has the same signature as this
+// hook.
+void* NvnBootstrapHook(const char* name) {
+    // get the pointer to the original function
+    // (varies between launchers)
+    void *originalFunction; 
+    
+    // let imgui_xeno handle it
+    return imgui_xeno_bootstrap_hook(name, originalFunction);
+}
+
+int main() {
+    // In your main function, initialize the library and register callbacks
+    // (Make sure this is called before the nvnBootstrap hook)
+    imgui_xeno_init(&ImGuiRenderCallback, &ImGuiInitCallback);
+    return 0;
+}
+```
+
+### skyline-rs
+
+The library can also be statically linked to Rust code that uses [skyline-rs](https://github.com/skyline-rs/).
+
+```rust
+// Also make sure the linker can find libimgui_xeno.a
+#[link(name = "imgui_xeno")] 
+extern "C" {
+    fn imgui_xeno_init(init: *const c_void, draw: *const c_void);
+    fn imgui_xeno_bootstrap_hook(name: *const c_char, original: *const c_void) -> *const c_void;
+}
+
+extern "C" {
+    fn nvnBootstrapLoader(name: *const c_char) -> *const c_void;
+}
+
+unsafe extern "C" fn imgui_init() {}
+unsafe extern "C" fn imgui_render() {}
+
+#[skyline::hook(replace = nvnBootstrapLoader)]
+unsafe fn nvn_bootstrap_hook(name: u64) -> u64 {
+    imgui_xeno_bootstrap_hook(name, original!() as *const c_void)
+}
+
+#[skyline::main(name = "imgui_xeno_demo")]
+pub fn main() {
+    unsafe {
+        imgui_xeno_init(
+            imgui_init as *const c_void,
+            imgui_render as *const c_void,
+        );
+        skyline::install_hooks!(nvn_bootstrap_hook);
+    }
+}
+```
+
+## Configuration
+
+### Not Xenoblade?
+
+Chances are this backend might also work in your game, even if it's not Xenoblade.  
+You can try the provided configuration options to improve compatibility, or patch the backend directly.  
+Note that if the required changes are too big to maintain for a non-Xenoblade title, it is probably
+best that you fork this repository instead.
+
+## Original repo credits
 
 - [CraftyBoss](https://github.com/CraftyBoss/MP1R-Exlaunch-Base) - thanks for the base <3
 - [exlaunch](https://github.com/shadowninja108/exlaunch/)
