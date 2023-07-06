@@ -32,8 +32,8 @@
 #define EXL_CALL_ASSERT_FAIL_IMPL(cond, ...) ::exl::diag::AssertionFailureImpl(NULL, 0, NULL, NULL, 0, ## __VA_ARGS__)
 #define EXL_CALL_ABORT_IMPL(cond, value, ...)  ({ \
     ::Logger::log(value, ## __VA_ARGS__);         \
-    int a = *(int*)(0);                                              \
-}); // TODO xeno
+    __builtin_trap();                                          \
+});
 
 #define EXL_UNREACHABLE_DEFAULT_CASE() default: EXL_CALL_ABORT_IMPL(NULL, 0)
 #define EXL_ABORT(value, ...) EXL_CALL_ABORT_IMPL("", value, ## __VA_ARGS__)

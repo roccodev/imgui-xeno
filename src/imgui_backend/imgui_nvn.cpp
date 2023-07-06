@@ -213,9 +213,7 @@ bool nvnImGui::InitImGui() {
 
     IMGUI_CHECKVERSION();
 
-    Mem::instance().Init();
-
-    Logger::log("Creating ImGui with Ver.2\n");
+    Mem::Init();
 
     ImGuiMemAllocFunc allocFunc = [](size_t size, void *user_data) {
       return Mem::Allocate(size);
