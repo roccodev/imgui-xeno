@@ -1,6 +1,6 @@
 # imgui-xeno: Dear ImGui backend for Xenoblade games
 
-A Dear ImGui backend that leverages NVN to support multiple Switch games.
+A [Dear ImGui](https://github.com/ocornut/imgui) backend that leverages NVN to support multiple Switch games.
 
 ## Main Credits
 
@@ -85,6 +85,9 @@ pub fn main() {
 ```
 
 ## Configuration
+
+Most parameters can be configured in the `user_config` source directory.  
+Particularly, you can add ImGui directives in the `imgui_user_config.h` file.
 
 ### Not Xenoblade?
 

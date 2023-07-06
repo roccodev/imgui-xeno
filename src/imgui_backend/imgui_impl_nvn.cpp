@@ -10,8 +10,9 @@
 #include "helpers/InputHelper.h"
 #include "MemoryPoolMaker.h"
 
-#include "imgui_shader.h"
 #include "JetBrainsMonoNL-Regular.h"
+#include "imgui_backend_config.h"
+#include "imgui_shader.h"
 #include "init.h"
 
 #define UBOSIZE 0x1000
@@ -435,7 +436,7 @@ namespace ImguiNvnBackend {
     io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
     io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 
-    io.DisplaySize = ImVec2(1600, 900); // default size
+    io.DisplaySize = ImVec2(IMGUI_XENO_VIEWPORT_WIDTH, IMGUI_XENO_VIEWPORT_HEIGHT); // default size
 
     // calculate ortho matrix
     orthoRH_ZO(projMatrix, 0.0f, io.DisplaySize.x, io.DisplaySize.y, 0.0f, -1.0f, 1.0f);
