@@ -169,13 +169,13 @@ void* nvnImGui::NvnBootstrapHook(const char *funcName, OrigNvnBootstrap origFn) 
 
 void nvnImGui::addDrawFunc(ProcDrawFunc func) {
 
-  EXL_ASSERT(!drawQueue.contains(func), "Function has already been added to queue!");
+  XENO_ASSERT(!drawQueue.contains(func), "Function has already been added to queue!");
 
   drawQueue.push_back(func);
 }
 
 void nvnImGui::addInitFunc(InitFunc func) {
-  EXL_ASSERT(!initQueue.contains(func), "Function has already been added to queue!");
+  XENO_ASSERT(!initQueue.contains(func), "Function has already been added to queue!");
 
   initQueue.push_back(func);
 }

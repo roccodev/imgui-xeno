@@ -29,8 +29,8 @@ void ImGuiRenderCallback() {
 void ImGuiInitCallback() {}
 
 // Create a hook with your launcher of choice (e.g. skyline, exlaunch...)
-// Replace the function "nvnBootstrap" which has the same signature as this
-// hook.
+// Replace the function "nvnBootstrapLoader" which has the same signature 
+// as this hook.
 void* NvnBootstrapHook(const char* name) {
     // get the pointer to the original function
     // (varies between launchers)

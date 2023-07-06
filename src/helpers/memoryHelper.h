@@ -1,6 +1,6 @@
 #pragma once
 
-#include "diag/assert.hpp"
+#include "assert.hpp"
 #include "logger/Logger.hpp"
 #include "nx/abort.h"
 #include "ro.h"

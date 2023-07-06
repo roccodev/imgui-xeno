@@ -61,7 +61,7 @@ namespace ImguiNvnBackend {
                                                 nvn::MemoryPoolFlags::GPU_CACHED |
                                                 nvn::MemoryPoolFlags::SHADER_CODE);
 
-    EXL_ASSERT(bd->testShaderBuffer->IsBufferReady(), "Shader Buffer was not ready! unable to continue.");
+    XENO_ASSERT(bd->testShaderBuffer->IsBufferReady(), "Shader Buffer was not ready! unable to continue.");
 
     BinaryHeader offsetData = BinaryHeader((u32 *) bd->testShaderBinary.ptr);
 
@@ -75,8 +75,8 @@ namespace ImguiNvnBackend {
     fragShaderData.data = addr + offsetData.mFragmentDataOffset;
     fragShaderData.control = bd->testShaderBinary.ptr + offsetData.mFragmentControlOffset;
 
-    EXL_ASSERT(bd->testShader.Initialize(bd->device), "Unable to Init Program!");
-    EXL_ASSERT(bd->testShader.SetShaders(2, bd->testShaderDatas), "Unable to Set Shaders!");
+    XENO_ASSERT(bd->testShader.Initialize(bd->device), "Unable to Init Program!");
+    XENO_ASSERT(bd->testShader.SetShaders(2, bd->testShaderDatas), "Unable to Set Shaders!");
 
     Logger::log("Test Shader Setup.\n");
 
@@ -231,7 +231,7 @@ namespace ImguiNvnBackend {
   NvnBackendData *getBackendData() {
     NvnBackendData *result = ImGui::GetCurrentContext() ? (NvnBackendData *) ImGui::GetIO().BackendRendererUserData
                                                         : nullptr;
-    EXL_ASSERT(result, "Backend has not been initialized!");
+    XENO_ASSERT(result, "Backend has not been initialized!");
     return result;
   }
 
@@ -250,7 +250,7 @@ namespace ImguiNvnBackend {
       Logger::log("Unable to compile shaders at runtime. falling back to pre-compiled shaders.\n");
 
       void *buf = Mem::Allocate(romfs_ShaderData_imgui_bin_len);
-      EXL_ASSERT(buf, "Failed to Allocate Buffer! File Size: %d", romfs_ShaderData_imgui_bin_len);
+      XENO_ASSERT(buf, "Failed to Allocate Buffer! File Size: %d", romfs_ShaderData_imgui_bin_len);
       memcpy(buf, romfs_ShaderData_imgui_bin, romfs_ShaderData_imgui_bin_len);
 
       Logger::log("Loaded shader\n");
@@ -425,7 +425,7 @@ namespace ImguiNvnBackend {
 
   void InitBackend(const NvnBackendInitInfo &initInfo) {
     ImGuiIO &io = ImGui::GetIO();
-    EXL_ASSERT(!io.BackendRendererUserData, "Already Initialized Imgui Backend!");
+    XENO_ASSERT(!io.BackendRendererUserData, "Already Initialized Imgui Backend!");
 
     io.BackendPlatformName = "Switch";
     io.BackendRendererName = "imgui_impl_nvn";

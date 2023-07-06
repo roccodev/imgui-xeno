@@ -1,8 +1,7 @@
 #include "memoryHelper.h"
 
 // Need a function to act as the default value
-inline void catch_all() {
-  EXL_ABORT("Memory not yet loaded");
+inline void catch_all() { XENO_ABORT("Memory not yet loaded");
 }
 
 static void *(*Malloc)(size_t) = reinterpret_cast<void* (*)(size_t)>(catch_all);

@@ -68,7 +68,7 @@ nn::Result Logger::init(const char *ip, u16 port) {
   return result;
 }
 
-__attribute__((noinline)) void outputDebugString(const char *buf, size_t len) {
+NOINLINE void outputDebugString(const char *buf, size_t len) {
   asm("svc 0x27");
 }
 

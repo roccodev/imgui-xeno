@@ -1,10 +1,9 @@
 
 #include "ImguiShaderCompiler.h"
-#include "diag/assert.hpp"
 #include "fs.h"
 #include "glslc/glslc.h"
 #include "helpers.h"
-#include "init.h"
+#include "helpers/assert.hpp"
 #include "logger/Logger.hpp"
 #include "nx/abort.h"
 #include <cstdio>
@@ -126,7 +125,7 @@ CompiledData NOINLINE CreateShaderBinary(GLSLCoutput *compileData, const char *s
 const char *GetShaderSource(const char *path) {
   nn::fs::FileHandle handle;
 
-  EXL_ASSERT(FsHelper::isFileExist(path), "Failed to Find File!");
+  XENO_ASSERT(FsHelper::isFileExist(path), "Failed to Find File!");
 
   R_ABORT_UNLESS(nn::fs::OpenFile(&handle, path, nn::fs::OpenMode_Read))
 
@@ -242,7 +241,7 @@ CompiledData ImguiShaderCompiler::CompileShader(const char *shaderName) {
     Logger::log("Vert Shader Source:\n%s\n", shaders[0]);
     Logger::log("Frag Shader Source:\n%s\n", shaders[1]);
 
-    EXL_ABORT(0, "Failed to Compile supplied shaders. \nVert Path: %s\nFrag Path: %s\n", vshPath, fshPath);
+    XENO_ABORT(0, "Failed to Compile supplied shaders. \nVert Path: %s\nFrag Path: %s\n", vshPath, fshPath);
   }
 
   glslcDll->Finalize(); // finalize compiler

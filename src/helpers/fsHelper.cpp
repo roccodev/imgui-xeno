@@ -1,5 +1,5 @@
 #include "fsHelper.h"
-#include "diag/assert.hpp"
+#include "assert.hpp"
 #include "init.h"
 #include "logger/Logger.hpp"
 #include "memoryHelper.h"
@@ -62,7 +62,7 @@ namespace FsHelper {
 
     nn::fs::FileHandle handle;
 
-    EXL_ASSERT(FsHelper::isFileExist(loadData.path), "Failed to Find File!\nPath: %s", loadData.path);
+    XENO_ASSERT(FsHelper::isFileExist(loadData.path), "Failed to Find File!\nPath: %s", loadData.path);
 
     R_ABORT_UNLESS(nn::fs::OpenFile(&handle, loadData.path, nn::fs::OpenMode_Read))
 
@@ -71,7 +71,7 @@ namespace FsHelper {
     loadData.buffer = Mem::Allocate(size);
     loadData.bufSize = size;
 
-    EXL_ASSERT(loadData.buffer, "Failed to Allocate Buffer! File Size: %ld", size);
+    XENO_ASSERT(loadData.buffer, "Failed to Allocate Buffer! File Size: %ld", size);
 
     R_ABORT_UNLESS(nn::fs::ReadFile(handle, 0, loadData.buffer, size))
 
@@ -95,7 +95,7 @@ namespace FsHelper {
     loadData.buffer = Mem::Allocate(size);
     loadData.bufSize = size;
 
-    EXL_ASSERT(loadData.buffer, "Failed to Allocate Buffer! File Size: %ld", size);
+    XENO_ASSERT(loadData.buffer, "Failed to Allocate Buffer! File Size: %ld", size);
 
     R_ABORT_UNLESS(nn::fs::ReadFile(handle, 0, loadData.buffer, size))
 
