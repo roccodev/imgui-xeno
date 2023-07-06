@@ -2,6 +2,7 @@
 #include "diag/assert.hpp"
 #include "init.h"
 #include "logger/Logger.hpp"
+#include "memoryHelper.h"
 #include "nx/abort.h"
 
 namespace FsHelper {
@@ -67,7 +68,7 @@ namespace FsHelper {
 
     long size = 0;
     nn::fs::GetFileSize(&size, handle);
-    loadData.buffer = nn::init::GetAllocator()->Allocate(size);
+    loadData.buffer = Mem::Allocate(size);
     loadData.bufSize = size;
 
     EXL_ASSERT(loadData.buffer, "Failed to Allocate Buffer! File Size: %ld", size);
@@ -91,7 +92,7 @@ namespace FsHelper {
 
     long size = 0;
     nn::fs::GetFileSize(&size, handle);
-    loadData.buffer = nn::init::GetAllocator()->Allocate(size);
+    loadData.buffer = Mem::Allocate(size);
     loadData.bufSize = size;
 
     EXL_ASSERT(loadData.buffer, "Failed to Allocate Buffer! File Size: %ld", size);

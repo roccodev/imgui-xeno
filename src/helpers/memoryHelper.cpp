@@ -1,34 +1,45 @@
 #include "memoryHelper.h"
+#include "logger/Logger.hpp"
+#include "nx/abort.h"
+#include "ro.h"
 
-namespace MemoryHelper {
-  template<class T>
-  void logMemory(T *ptr) {
-    int size = sizeof(T);
-    auto all = (unsigned char *) ptr;
+Mem& Mem::instance() {
+  static Mem instance;
+  return instance;
+}
 
-    for (int i = 0; i < size; i++) {
-      Logger::log("%02X", all[i]);
-    }
-    Logger::log("\n");
-  }
+void Mem::Init() {
+  uintptr_t mallocFn = 0xDEADBEEF;
+  uintptr_t alignedAllocFn = 0xDEADBEEF;
+  uintptr_t reallocFn = 0xDEADBEEF;
+  uintptr_t freeFn = 0xDEADBEEF;
 
-  void logMemory(void *ptr, size_t size) {
-    auto all = (unsigned char *) ptr;
-    for (size_t i = 0; i < size; i++) {
-      Logger::log("%02X", all[i]);
-    }
-    Logger::log("\n");
-  }
+  R_ABORT_UNLESS(nn::ro::LookupSymbol(&mallocFn, "malloc"));
+  R_ABORT_UNLESS(nn::ro::LookupSymbol(&alignedAllocFn, "aligned_alloc"));
+  R_ABORT_UNLESS(nn::ro::LookupSymbol(&freeFn, "free"));
+  R_ABORT_UNLESS(nn::ro::LookupSymbol(&reallocFn, "realloc"));
 
-  void logBytes(void *ptr, size_t size) {
-    auto *b = (unsigned char *) ptr;
+  this->malloc = reinterpret_cast<void *(*)(size_t)>(mallocFn);
+  this->alignedAlloc = reinterpret_cast<void *(*)(size_t, size_t)>(alignedAllocFn);
+  this->free = reinterpret_cast<void (*)(void*)>(freeFn);
+  this->realloc = reinterpret_cast<void *(*)(void*, size_t)>(reallocFn);
 
-    for (size_t i = size; i > 0; i--) {
-      for (int j = 7; j >= 0; j--) {
-        unsigned char byte = (b[i - 1] >> j) & 1;
-        Logger::log("%u", byte);
-      }
-    }
-    Logger::log("\n");
-  }
+  Logger::log("Mem initialized\n");
+}
+
+void* Mem::Allocate(size_t size) {
+  return (Mem::instance().malloc)(size);
+}
+
+
+void Mem::Deallocate(void* ptr) {
+  (Mem::instance().free)(ptr);
+}
+
+void* Mem::Reallocate(void* ptr, size_t size) {
+  return (Mem::instance().realloc)(ptr, size);
+}
+
+void* Mem::AllocateAlign(size_t align, size_t size) {
+  return (Mem::instance().alignedAlloc)(align, size);
 }

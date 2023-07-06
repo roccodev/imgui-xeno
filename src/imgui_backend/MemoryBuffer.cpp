@@ -1,6 +1,7 @@
 #include "MemoryBuffer.h"
 #include "imgui_impl_nvn.hpp"
 #include "logger/Logger.hpp"
+#include "helpers/memoryHelper.h"
 
 MemoryBuffer::MemoryBuffer(size_t size) {
 
@@ -8,7 +9,7 @@ MemoryBuffer::MemoryBuffer(size_t size) {
 
   size_t alignedSize = ALIGN_UP(size, 0x1000);
 
-  memBuffer = IM_ALLOC(alignedSize);
+  memBuffer = Mem::AllocateAlign(0x1000, alignedSize);
   memset(memBuffer, 0, alignedSize);
 
   bd->memPoolBuilder.SetDefaults()
@@ -37,7 +38,7 @@ MemoryBuffer::MemoryBuffer(size_t size, nvn::MemoryPoolFlags flags) {
 
   size_t alignedSize = ALIGN_UP(size, 0x1000);
 
-  memBuffer = IM_ALLOC(alignedSize);
+  memBuffer = Mem::AllocateAlign(0x1000, alignedSize);
   memset(memBuffer, 0, alignedSize);
 
   bd->memPoolBuilder.SetDefaults()
@@ -64,12 +65,15 @@ MemoryBuffer::MemoryBuffer(size_t size, void *bufferPtr, nvn::MemoryPoolFlags fl
 
   auto *bd = ImguiNvnBackend::getBackendData();
 
-  memBuffer = bufferPtr;
+  // Copy to respect alignment for both size and pointer
+  auto alignedSize = ALIGN_UP(0x1000, size);
+  memBuffer = Mem::AllocateAlign(0x1000, alignedSize);
+  memcpy(memBuffer, bufferPtr, size);
 
   bd->memPoolBuilder.SetDefaults()
       .SetDevice(bd->device)
       .SetFlags(flags)
-      .SetStorage(memBuffer, size);
+      .SetStorage(memBuffer, alignedSize);
 
   if (!pool.Initialize(&bd->memPoolBuilder)) {
     Logger::log("Failed to Create Memory Pool!\n");

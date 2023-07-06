@@ -1,12 +1,11 @@
 #include "imgui_nvn.h"
 #include "helpers/InputHelper.h"
+#include "helpers/memoryHelper.h"
 #include "imgui_backend/imgui_impl_nvn.hpp"
 #include "imgui_backend_config.h"
-#include "imgui_xeno.hpp"
-#include "init.h"
 #include "logger/Logger.hpp"
-#include "nn/fs.h"
 #include "nvn_CppFuncPtrImpl.h"
+#include "nx/abort.h"
 
 nvn::Device *nvnDevice;
 nvn::Queue *nvnQueue;
@@ -214,19 +213,25 @@ bool nvnImGui::InitImGui() {
 
     IMGUI_CHECKVERSION();
 
+    Mem::instance().Init();
+
+    Logger::log("Creating ImGui with Ver.2\n");
+
     ImGuiMemAllocFunc allocFunc = [](size_t size, void *user_data) {
-      return nn::init::GetAllocator()->Allocate(size);
+      return Mem::Allocate(size);
     };
 
     ImGuiMemFreeFunc freeFunc = [](void *ptr, void *user_data) {
-      nn::init::GetAllocator()->Free(ptr);
+      Mem::Deallocate(ptr);
     };
 
     ImGui::SetAllocatorFunctions(allocFunc, freeFunc, nullptr);
 
+    Logger::log("Creating ImGui context.\n");
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
+    Logger::log("Created ImGui context.\n");
 
     ImGui::StyleColorsDark();
 

@@ -1,7 +1,6 @@
 #include "imgui_impl_nvn.hpp"
 #include "helpers.h"
 #include "imgui_hid_mappings.h"
-#include "imgui_xeno.hpp"
 #include "logger/Logger.hpp"
 #include <cmath>
 
@@ -249,13 +248,7 @@ namespace ImguiNvnBackend {
     } else {
       Logger::log("Unable to compile shaders at runtime. falling back to pre-compiled shaders.\n");
 
-//      FsHelper::LoadData loadData = {
-//          .path = "sd:/mp1r/ShaderData/imgui.bin"
-//      };
-//
-//      FsHelper::loadFileFromPath(loadData);
-
-      void *buf = nn::init::GetAllocator()->Allocate(romfs_ShaderData_imgui_bin_len);
+      void *buf = Mem::Allocate(romfs_ShaderData_imgui_bin_len);
       EXL_ASSERT(buf, "Failed to Allocate Buffer! File Size: %d", romfs_ShaderData_imgui_bin_len);
       memcpy(buf, romfs_ShaderData_imgui_bin, romfs_ShaderData_imgui_bin_len);
 
@@ -734,35 +727,5 @@ namespace ImguiNvnBackend {
     // end the command recording and submit to queue.
     auto handle = bd->cmdBuf->EndRecording();
     bd->queue->SubmitCommands(1, &handle);
-  }
-
-  void loadIni() {
-      FsHelper::LoadData loadData = {
-          .path = "sd:/mp1r/imgui.ini"
-      };
-
-      if (FsHelper::tryLoadFileFromPath(loadData)) {
-        Logger::log("Loaded imgui.ini\n");
-        ImGui::LoadIniSettingsFromMemory(static_cast<const char *>(loadData.buffer), loadData.bufSize);
-        nn::init::GetAllocator()->Free(loadData.buffer);
-      } else {
-        Logger::log("Failed to load imgui.ini\n");
-      }
-  }
-
-  void saveIni() {
-    size_t size;
-    const char *ini = ImGui::SaveIniSettingsToMemory(&size);
-
-    if (FsHelper::createDirectory("sd:/mp1r/") != 0) {
-      ImGui::GetIO().WantSaveIniSettings = false;
-      return;
-    }
-
-    bool saved = FsHelper::writeFileToPath(ini, size, "sd:/mp1r/imgui.ini");
-    if (saved != 0) {
-      Logger::log("Failed to save imgui.ini\n");
-    }
-    ImGui::GetIO().WantSaveIniSettings = false;
   }
 }
