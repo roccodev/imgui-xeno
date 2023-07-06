@@ -478,6 +478,10 @@ namespace ImguiNvnBackend {
   void updateMouse(ImGuiIO &io) {
     ImVec2 mousePos(0, 0);
     InputHelper::getMouseCoords(&mousePos.x, &mousePos.y);
+
+    // Workaround from https://github.com/Amethyst-szs/smo-lunakit
+    mousePos = ImVec2((mousePos.x / (float) IMGUI_XENO_VIEWPORT_WIDTH) * io.DisplaySize.x,
+                      (mousePos.y / (float) IMGUI_XENO_VIEWPORT_HEIGHT) * io.DisplaySize.y);
     io.AddMousePosEvent(mousePos.x, mousePos.y);
 
     ImVec2 scrollDelta(0, 0);

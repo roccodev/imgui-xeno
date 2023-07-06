@@ -7,6 +7,9 @@ A [Dear ImGui](https://github.com/ocornut/imgui) backend that leverages NVN to s
 This implementation is a fork of [mp1r-practice-mod](https://github.com/MetroidPrimeModding/mp1r-practice-mod).   
 In particular, it extracts [CraftyBoss](https://github.com/CraftyBoss)'s original NVN backend for use in other games.
 
+It also includes some workarounds from the [Super Mario Odyssey adaptation](https://github.com/Amethyst-szs/smo-lunakit), 
+made by [Amethyst-szs](https://github.com/Amethyst-szs).
+
 ## API usage
 
 This backend should be exported as a static library, for use in other modding projects.  

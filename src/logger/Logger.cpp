@@ -74,8 +74,11 @@ NOINLINE void outputDebugString(const char *buf, size_t len) {
 
 void Logger::log(const char *fmt, ...) {
 
-  if ((instance().mState != LoggerState::CONNECTED && !IMGUI_XENO_LOG_SVC)
-      || (!IMGUI_XENO_LOG_TCP && !IMGUI_XENO_LOG_SVC)) {
+  if (!IMGUI_XENO_LOG_TCP && !IMGUI_XENO_LOG_SVC) {
+    return;
+  }
+
+  if (instance().mState != LoggerState::CONNECTED && !IMGUI_XENO_LOG_SVC) {
     return;
   }
 
