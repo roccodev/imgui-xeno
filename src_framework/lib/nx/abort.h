@@ -2,15 +2,14 @@
 #pragma once
 
 #include "types.h"
-
-extern void exl_abort(Result);
+#include "nn/diag.h"
 
 #ifndef R_ABORT_UNLESS
 #define R_ABORT_UNLESS(r)   \
     {                       \
     Result _tmp_r = r;      \
     if(R_FAILED(_tmp_r))    \
-        exl_abort(_tmp_r);   \
+        ::nn::diag::detail::AbortImpl(__FILE__, __func__, "Result abort", __LINE__, _tmp_r);   \
     }                                       
 
 #elif

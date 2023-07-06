@@ -27,8 +27,6 @@
 
 #define XENO_ABORT(value, ...) XENO_ABORT_IMPL("", value, ## __VA_ARGS__)
 
-
-
 #define XENO_ASSERT_IMPL(expr, ...)                                                                            \
     ({                                                                                                        \
         if (!(static_cast<bool>(expr))) {                                                                                  \

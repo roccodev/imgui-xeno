@@ -1,7 +1,6 @@
 #include "Logger.hpp"
 #include "imgui_backend_config.h"
 #include "nifm.h"
-#include "nx/kernel/svc.h"
 #include "socket.h"
 #include "util.h"
 
