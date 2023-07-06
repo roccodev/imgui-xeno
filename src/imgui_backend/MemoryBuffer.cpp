@@ -66,14 +66,13 @@ MemoryBuffer::MemoryBuffer(size_t size, void *bufferPtr, nvn::MemoryPoolFlags fl
   auto *bd = ImguiNvnBackend::getBackendData();
 
   // Copy to respect alignment for both size and pointer
-  auto alignedSize = ALIGN_UP(0x1000, size);
-  memBuffer = Mem::AllocateAlign(0x1000, alignedSize);
+  memBuffer = Mem::AllocateAlign(0x1000, size);
   memcpy(memBuffer, bufferPtr, size);
 
   bd->memPoolBuilder.SetDefaults()
       .SetDevice(bd->device)
       .SetFlags(flags)
-      .SetStorage(memBuffer, alignedSize);
+      .SetStorage(memBuffer, size);
 
   if (!pool.Initialize(&bd->memPoolBuilder)) {
     Logger::log("Failed to Create Memory Pool!\n");
