@@ -24,6 +24,8 @@ include_directories(${PROJECT_SOURCE_DIR}/fonts/precompiled)
 include_directories(${PROJECT_SOURCE_DIR}/shaders/precompiled)
 include_directories(${PROJECT_SOURCE_DIR}/user_config)
 
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 file(GLOB_RECURSE SOURCES_ASM
         ${PROJECT_SOURCE_DIR}/src/*.s
         ${PROJECT_SOURCE_DIR}/src_framework/*.s

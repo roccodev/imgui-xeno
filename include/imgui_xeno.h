@@ -1,6 +1,6 @@
 #pragma once
 
-#include "helpers/xeno_types.h"
+#include "xeno_types.h"
 
 extern "C" void imgui_xeno_init(InitFunc init, ProcDrawFunc renderCallback);
 

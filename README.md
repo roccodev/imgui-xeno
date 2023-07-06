@@ -18,6 +18,8 @@ It is not recommended to use this repository as a base.
 **The backend is also meant to be launcher-agnostic**, meaning it can be used on all environments with access
 to the NNSDK API: Skyline, exlaunch, etc.
 
+To use the library in your project, you might also need to copy the `include/` directory.
+
 ### Example
 
 ```c
