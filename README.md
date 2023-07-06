@@ -52,6 +52,8 @@ int main() {
 
 The library can also be statically linked to Rust code that uses [skyline-rs](https://github.com/skyline-rs/).
 
+A working example can be found in the `examples/` directory.
+
 ```rust
 // Also make sure the linker can find libimgui_xeno.a
 #[link(name = "imgui_xeno")] 
