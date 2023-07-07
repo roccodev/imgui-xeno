@@ -38,4 +38,11 @@ unsafe fn nvn_bootstrap_hook(name: *const c_char) -> *const c_void {
 #[skyline::main(name = "skyline-rs-demo")]
 pub fn main() {
     skyline::install_hook!(nvn_bootstrap_hook);
+
+    unsafe {
+        imgui_xeno_init(
+            on_imgui_init as *const c_void,
+            on_imgui_render as *const c_void
+        );
+    }
 }

@@ -1,7 +1,7 @@
 all: build-lib build-nro
 
 build-lib:
-	cmake -DCMAKE_TOOLCHAIN_FILE=../../../../cmake/toolchain.cmake ../.. -B lib/cmake-build && cmake --build lib/cmake-build
+	cmake -DCMAKE_TOOLCHAIN_FILE=../../../../cmake/toolchain.cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ../.. -B lib/cmake-build && cmake --build lib/cmake-build
 
 build-nro:
 	cargo skyline build
