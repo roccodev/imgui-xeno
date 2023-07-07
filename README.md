@@ -10,12 +10,21 @@ In particular, it extracts [CraftyBoss](https://github.com/CraftyBoss)'s origina
 It also includes some workarounds from the [Super Mario Odyssey adaptation](https://github.com/Amethyst-szs/smo-lunakit), 
 made by [Amethyst-szs](https://github.com/Amethyst-szs).
 
-## API usage
+## Building
 
 This backend should be exported as a static library, for use in other modding projects.  
 It is not recommended to use this repository as a base.
 
-**The backend is also meant to be launcher-agnostic**, meaning it can be used on all environments with access
+To get the library, install CMake, then run
+```
+make
+```
+
+The shared library (`libimgui_xeno.a`) can be found in the `cmake-build-minsizerel` directory.
+
+## API usage
+
+**The backend is meant to be launcher-agnostic**, meaning it can be used on all environments with access
 to the NNSDK API: Skyline, exlaunch, etc.
 
 To use the library in your project, you might also need to copy the `include/` directory.

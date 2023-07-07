@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(imgui-xeno CXX C ASM)
+project(imgui-xeno CXX)
 
 ## Error if not using switch toolchain file
 if (NOT SWITCH)
