@@ -17,12 +17,13 @@
 #pragma once
 
 #include "logger/Logger.hpp"
+#include "nn/diag.h"
 
 // Adapted from exlaunch's abort/assert
 
 #define XENO_ABORT_IMPL(cond, value, ...)  ({ \
     ::Logger::log(value, ## __VA_ARGS__);         \
-    __builtin_trap();                                          \
+    ::nn::diag::detail::AbortImpl(__FILE__, __func__, value, __LINE__);   \
 });
 
 #define XENO_ABORT(value, ...) XENO_ABORT_IMPL("", value, ## __VA_ARGS__)

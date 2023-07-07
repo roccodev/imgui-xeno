@@ -4,6 +4,7 @@
 #include "glslc/glslc.h"
 #include "helpers.h"
 #include "helpers/assert.hpp"
+#include "imgui_backend_config.h"
 #include "logger/Logger.hpp"
 #include "nx/abort.h"
 #include <cstdio>
@@ -143,6 +144,13 @@ const char *GetShaderSource(const char *path) {
 }
 
 bool ImguiShaderCompiler::CheckIsValidVersion(nvn::Device *device) {
+  Logger::log("Checking if GLSLC is exported.\n");
+
+  uintptr_t _ignored;
+  if (R_FAILED(nn::ro::LookupSymbol(&_ignored, "nn::gfx::detail::GlslcDll::GlslcGetVersion"))) {
+    Logger::log("GLSLC is not exported, using precompiled shaders.\n");
+    return false;
+  }
 
   Logger::log("Checking if GLSLC subsdk is on a valid version.\n");
 
@@ -218,10 +226,10 @@ CompiledData ImguiShaderCompiler::CompileShader(const char *shaderName) {
   const char *shaders[6];
   NVNshaderStage stages[6];
 
-  char vshPath[0x40] = {}; //"sd:/smo/shaders/sources/imgui_vsh.glsl";
-  createPath(vshPath, "sd:/smo/shaders/sources", shaderName, "_vsh.glsl");
-  char fshPath[0x40] = {}; //"sd:/smo/shaders/sources/imgui_fsh.glsl";
-  createPath(fshPath, "sd:/smo/shaders/sources", shaderName, "_fsh.glsl");
+  char vshPath[0x40] = {};
+  createPath(vshPath, IMGUI_XENO_SHADER_PATH, shaderName, "_vsh.glsl");
+  char fshPath[0x40] = {};
+  createPath(fshPath, IMGUI_XENO_SHADER_PATH, shaderName, "_fsh.glsl");
 
   shaders[0] = GetShaderSource(vshPath);
   stages[0] = NVNshaderStage::NVN_SHADER_STAGE_VERTEX;

@@ -29,7 +29,7 @@ nn::hid::MouseState InputHelper::prevMouseState{};
 
 ulong InputHelper::selectedPort = -1;
 bool InputHelper::isReadInput = true;
-bool InputHelper::toggleInput = true;
+bool InputHelper::toggleInput = false;
 
 const char *getStyleName(nn::hid::NpadStyleSet style) {
 

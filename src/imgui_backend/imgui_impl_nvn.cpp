@@ -4,16 +4,17 @@
 #include "logger/Logger.hpp"
 #include <cmath>
 
-#include "nn/os.h"
 #include "nn/hid.h"
 
 #include "helpers/InputHelper.h"
 #include "MemoryPoolMaker.h"
-
-#include "JetBrainsMonoNL-Regular.h"
 #include "imgui_backend_config.h"
+
+#if IMGUI_XENO_LOAD_DEFAULT_FONT
+#include "JetBrainsMonoNL-Regular.h"
+#endif
+
 #include "imgui_shader.h"
-#include "init.h"
 
 #define UBOSIZE 0x1000
 
@@ -239,7 +240,7 @@ namespace ImguiNvnBackend {
 
     auto bd = getBackendData();
 
-    if (false) {
+    if (!IMGUI_XENO_FORCE_PRECOMPILED_SHADERS && ImguiShaderCompiler::CheckIsValidVersion(bd->device)) {
       Logger::log("GLSLC compiler can be used!\n");
 
       ImguiShaderCompiler::InitializeCompiler();
@@ -449,10 +450,12 @@ namespace ImguiNvnBackend {
     bd->cmdBuf = initInfo.cmdBuf;
     bd->isInitialized = false;
 
+#if IMGUI_XENO_LOAD_DEFAULT_FONT
     io.Fonts->AddFontFromMemoryCompressedTTF(
         JetBrainsMonoNL_compressed_data, JetBrainsMonoNL_compressed_size,
         18.f
     );
+#endif
 
     if (createShaders()) {
       Logger::log("Shader Binaries Loaded! Setting up Render Data.\n");
