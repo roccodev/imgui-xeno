@@ -11,7 +11,7 @@
 #define IMGUI_XENO_COMMAND_BUFFER_ID 1
 #define IMGUI_XENO_DEFAULT_INPUT_PORT 0
 // Change to true to draw the ImGui demo window
-#define IMGUI_XENO_DRAW_DEMO true
+#define IMGUI_XENO_DRAW_DEMO false
 
 // Logging
 
