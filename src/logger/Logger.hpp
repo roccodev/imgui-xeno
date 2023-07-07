@@ -1,10 +1,8 @@
 #pragma once
 
 #include "nn/result.h"
+#include "xeno_types.h"
 
-enum class LoggerState {
-  UNINITIALIZED = 0, CONNECTED = 1, UNAVAILABLE = 2, DISCONNECTED = 3
-};
 
 class Logger {
 public:
@@ -12,14 +10,12 @@ public:
 
   static Logger &instance();
 
-  nn::Result init(const char *ip, u16 port);
+  void forward(LoggerFunc callback);
 
   static void log(const char *fmt, ...);
 
   static void log(const char *fmt, va_list args);
 
 private:
-  LoggerState mState;
-  int mSocketFd;
-  bool mIsEmulator;
+  LoggerFunc forwarder;
 };

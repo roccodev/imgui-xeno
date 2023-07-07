@@ -32,7 +32,5 @@
 
 // Logging
 
+// Logs messages using system calls. If a logger is provided with imgui_xeno_set_logger, it will be used instead.
 #define IMGUI_XENO_LOG_SVC true
-#define IMGUI_XENO_LOG_TCP false
-#define IMGUI_XENO_LOG_TCP_IP "127.0.0.1"
-#define IMGUI_XENO_LOG_TCP_PORT 3080
