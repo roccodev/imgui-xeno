@@ -21,6 +21,12 @@
 // Input
 
 #define IMGUI_XENO_DEFAULT_INPUT_PORT 0
+// Enable keyboard/mouse inputs when connected to the Switch via USB
+#define IMGUI_XENO_INPUT_KBM true
+// Enable gamepad inputs (must be toggled by pressing both sticks)
+#define IMGUI_XENO_INPUT_PAD true
+// Enable touchscreen inputs
+#define IMGUI_XENO_INPUT_TOUCH true
 
 // ImGui
 

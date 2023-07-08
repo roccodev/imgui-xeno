@@ -2,6 +2,8 @@
 
 #include "nn/hid.h"
 
+#define HID_TOUCH_MAX_TOUCHES 1 // we only care about one touch
+
 class InputHelper {
 
 public:
@@ -46,6 +48,14 @@ public:
   static void getMouseCoords(float *x, float *y);
 
   static void getScrollDelta(float *x, float *y);
+
+  // XENO: touchscreen
+
+  static bool getTouchCoords(float *x, float *y);
+
+  static bool isTouchPress();
+
+  static bool isTouchRelease();
 
   // specific button funcs
 
@@ -173,6 +183,9 @@ private:
 
   static nn::hid::MouseState curMouseState;
   static nn::hid::MouseState prevMouseState;
+
+  static nn::hid::TouchScreenState<HID_TOUCH_MAX_TOUCHES> curTouchState;
+  static nn::hid::TouchScreenState<HID_TOUCH_MAX_TOUCHES> prevTouchState;
 
   static ulong selectedPort;
 

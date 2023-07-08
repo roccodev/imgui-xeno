@@ -282,6 +282,18 @@ namespace nn {
             s32 mReserved;
         };
 
+        // XENO: Xenoblade games use 16 as the generic parameter, assuming it's the max
+        constexpr inline u64 MaxNumTouches = 16;
+
+        // https://switchbrew.org/wiki/HID_services#TouchScreenState
+        template<u64 NumTouches>
+        struct TouchScreenState {
+            u64 samplingNumber;
+            s32 count;
+            char reserved[4];
+            TouchState touches[NumTouches];
+        };
+
         struct KeyboardState {
             u64 samplingNumber;
             nn::util::BitFlagSet<32, KeyboardModifier> modifiers;
@@ -382,6 +394,9 @@ namespace nn {
         void GetMouseState(nn::hid::MouseState *);
 
         void GetKeyboardState(nn::hid::KeyboardState *);
+
+        template<u64 NumTouches>
+        void GetTouchScreenState(nn::hid::TouchScreenState<NumTouches> *);
         
     }  // namespace hid
 }  // namespace nn

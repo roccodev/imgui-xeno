@@ -33,7 +33,7 @@ extern "C" void* imgui_xeno_bootstrap_hook(const char *functionName, OrigNvnBoot
  * By default, if logging is enabled (see `IMGUI_XENO_LOG_SVC`), messages are logged to the debug system output using
  * supervisor calls.
  *
- * This function can be used to redirect log messages to a user-provided frontend instead.
+ * This function can be used to redirect log messages to a user-provided frontend.
  * The callback takes the following parameters:
  *
  * - `const char* buffer`: the nul-terminated message buffer

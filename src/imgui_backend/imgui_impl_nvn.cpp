@@ -478,9 +478,32 @@ namespace ImguiNvnBackend {
 
   }
 
+  bool updateTouch(ImGuiIO &io) {
+    ImVec2 pos(0, 0);
+    if (!InputHelper::getTouchCoords(&pos.x, &pos.y)) {
+      if (InputHelper::isTouchRelease()) {
+        io.AddMouseButtonEvent(ImGuiMouseButton_Left, false);
+      }
+      return false;
+    }
+
+    io.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen);
+
+    pos.x = (pos.x / (float) IMGUI_XENO_VIEWPORT_WIDTH) * io.DisplaySize.x;
+    pos.y = (pos.y / (float) IMGUI_XENO_VIEWPORT_HEIGHT) * io.DisplaySize.y;
+    io.AddMousePosEvent(pos.x, pos.y);
+
+    if (InputHelper::isTouchPress()) {
+      io.AddMouseButtonEvent(ImGuiMouseButton_Left, true);
+    }
+    return true;
+  }
+
   void updateMouse(ImGuiIO &io) {
     ImVec2 mousePos(0, 0);
     InputHelper::getMouseCoords(&mousePos.x, &mousePos.y);
+
+    io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
 
     // Workaround from https://github.com/Amethyst-szs/smo-lunakit
     mousePos = ImVec2((mousePos.x / (float) IMGUI_XENO_VIEWPORT_WIDTH) * io.DisplaySize.x,
@@ -533,12 +556,25 @@ namespace ImguiNvnBackend {
   void updateInput() {
 
     ImGuiIO &io = ImGui::GetIO();
+
+#if IMGUI_XENO_INPUT_TOUCH
+    if (updateTouch(io)) {
+      // Handled touch screen input, disable other inputs for this frame.
+      return;
+    }
+#endif
+
+#if IMGUI_XENO_INPUT_KBM
     updateKeyboard(io);
     updateMouse(io);
+#endif
 
+#if IMGUI_XENO_INPUT_PAD
     if (InputHelper::isInputToggled()) {
       updateGamepad(io);
     }
+#endif
+
   }
 
   void newFrame() {
