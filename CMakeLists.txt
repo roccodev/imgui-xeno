@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 project(imgui-xeno CXX)
 
 ## Error if not using switch toolchain file
-if (NOT SWITCH)
+if (NOT SWITCH AND NOT IMGUI_XENO_EXTERNAL_TOOLCHAIN)
   message(FATAL_ERROR "Not targeting switch, make sure to specify -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain.cmake")
 endif ()
 
@@ -46,7 +46,9 @@ file(GLOB SOURCES_H ${PROJECT_SOURCE_DIR}/shaders/precompiled/*.h)
 file(GLOB SOURCES_H ${PROJECT_SOURCE_DIR}/user_config/*.h)
 
 ## Include nx tools
-include(${CMAKE_SOURCE_DIR}/cmake/SwitchTools.cmake)
+if (NOT IMGUI_XENO_EXTERNAL_TOOLCHAIN)
+  include(${CMAKE_SOURCE_DIR}/cmake/SwitchTools.cmake)
+endif ()
 
 ## Build static lib
 add_library(imgui_xeno STATIC ${SOURCES_ASM} ${SOURCES_C} ${SOURCES_H} ${SOURCES_CXX} ${IMGUI_SOURCES})
