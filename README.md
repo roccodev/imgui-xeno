@@ -57,7 +57,7 @@ void* NvnBootstrapHook(const char* name) {
 int main() {
     // In your main function, initialize the library and register callbacks
     // (Make sure this is called before the nvnBootstrap hook)
-    imgui_xeno_init(&ImGuiRenderCallback, &ImGuiInitCallback);
+    imgui_xeno_init(&ImGuiInitCallback, &ImGuiRenderCallback);
     return 0;
 }
 ```
