@@ -3,7 +3,7 @@ project(imgui-xeno CXX)
 
 ## Error if not using switch toolchain file
 if (NOT SWITCH AND NOT IMGUI_XENO_EXTERNAL_TOOLCHAIN)
-  message(FATAL_ERROR "Not targeting switch, make sure to specify -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain.cmake")
+  message(FATAL_ERROR "Not targeting switch, make sure to specify -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain.cmake, or set IMGUI_XENO_EXTERNAL_TOOLCHAIN if another toolchain is already active")
 endif ()
 
 set(CMAKE_C_STANDARD 17)
