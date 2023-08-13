@@ -1,4 +1,4 @@
-#include "memoryHelper.h"
+#include "helpers/memoryHelper.h"
 
 // Need a function to act as the default value
 inline void catch_all() { XENO_ABORT("Memory not yet loaded");

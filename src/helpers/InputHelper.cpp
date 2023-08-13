@@ -1,4 +1,4 @@
-#include "InputHelper.h"
+#include "helpers/InputHelper.h"
 #include "logger/Logger.hpp"
 
 nn::hid::NpadBaseState InputHelper::prevControllerState{};
