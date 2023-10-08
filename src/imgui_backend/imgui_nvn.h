@@ -10,6 +10,7 @@ namespace nvnImGui {
 
   typedef void (*ProcDrawFunc)();
   typedef void (*InitFunc)();
+  typedef void (*NewFrameFunc)();
   typedef void* (*OrigNvnBootstrap)(const char*);
 
   void InstallHooks();
@@ -19,6 +20,9 @@ namespace nvnImGui {
   void procDraw();
 
   void addDrawFunc(ProcDrawFunc func);
-  void addInitFunc(InitFunc func);
+  void addPreInitFunc(InitFunc func);
+  void addPostInitFunc(InitFunc func);
+  void addNewFrameFunc(NewFrameFunc func);
+
   void* NvnBootstrapHook(const char *funcName, OrigNvnBootstrap origFn);
 }

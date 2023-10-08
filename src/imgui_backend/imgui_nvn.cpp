@@ -31,7 +31,9 @@ int commandBufferCount = 0;
 
 namespace nvnImGui {
   ImVector<ProcDrawFunc> drawQueue;
-  ImVector<InitFunc> initQueue;
+  ImVector<InitFunc> preInitQueue;
+  ImVector<InitFunc> postInitQueue;
+  ImVector<NewFrameFunc> newFrameQueue;
 }
 
 void setTexturePool(nvn::CommandBuffer *cmdBuf, const nvn::TexturePool *pool) {
@@ -168,19 +170,38 @@ void* nvnImGui::NvnBootstrapHook(const char *funcName, OrigNvnBootstrap origFn) 
 }
 
 void nvnImGui::addDrawFunc(ProcDrawFunc func) {
-
+  XENO_ASSERT(func != nullptr, "Function cannot be nullptr!");
   XENO_ASSERT(!drawQueue.contains(func), "Function has already been added to queue!");
 
   drawQueue.push_back(func);
 }
 
-void nvnImGui::addInitFunc(InitFunc func) {
-  XENO_ASSERT(!initQueue.contains(func), "Function has already been added to queue!");
+void nvnImGui::addPreInitFunc(InitFunc func) {
+  XENO_ASSERT(func != nullptr, "Function cannot be nullptr!");
+  XENO_ASSERT(!preInitQueue.contains(func), "Function has already been added to queue!");
 
-  initQueue.push_back(func);
+  preInitQueue.push_back(func);
+}
+
+void nvnImGui::addPostInitFunc(InitFunc func) {
+  XENO_ASSERT(func != nullptr, "Function cannot be nullptr!");
+  XENO_ASSERT(!postInitQueue.contains(func), "Function has already been added to queue!");
+
+  postInitQueue.push_back(func);
+}
+
+void nvnImGui::addNewFrameFunc(NewFrameFunc func) {
+  XENO_ASSERT(func != nullptr, "Function cannot be nullptr!");
+  XENO_ASSERT(!newFrameQueue.contains(func), "Function has already been added to queue!");
+
+  newFrameQueue.push_back(func);
 }
 
 void nvnImGui::procDraw() {
+  for (auto newFrameFunc: newFrameQueue) {
+    newFrameFunc();
+  }
+
   ImguiNvnBackend::newFrame();
   ImGui::NewFrame();
   ImGui::GetIO().MouseDrawCursor = InputHelper::toggleInput;
@@ -239,6 +260,10 @@ bool nvnImGui::InitImGui() {
         .cmdBuf = nvnCmdBuf
     };
 
+    for (auto init: preInitQueue) {
+      init();
+    }
+
     Logger::log("Initializing Backend.\n");
 
     ImguiNvnBackend::InitBackend(initInfo);
@@ -248,7 +273,7 @@ bool nvnImGui::InitImGui() {
     // set input helpers default port
     InputHelper::setPort(IMGUI_XENO_DEFAULT_INPUT_PORT);
 
-    for (auto init: initQueue) {
+    for (auto init: postInitQueue) {
       init();
     }
 
