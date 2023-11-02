@@ -60,7 +60,13 @@ void* NvnBootstrapHook(const char* name) {
 int main() {
     // In your main function, initialize the library and register callbacks
     // (Make sure this is called before the nvnBootstrap hook)
-    imgui_xeno_init(&ImGuiPreInitCallback, &ImGuiPostInitCallback, &ImGuiNewFrameCallback, &ImGuiRenderCallback);
+    
+    // Register any pre-init tasks here
+    imgui_xeno_add_on_pre_init(&ImGuiPreInitCallback);
+    // Register any new frame tasks here
+    imgui_xeno_add_on_new_frame(&ImGuiNewFrameCallback);
+    // Initialize the library
+    imgui_xeno_init(&ImGuiPostInitCallback, &ImGuiRenderCallback);
     return 0;
 }
 ```
@@ -75,17 +81,19 @@ A working example can be found in the `examples/` directory.
 // Also make sure the linker can find libimgui_xeno.a
 #[link(name = "imgui_xeno")] 
 extern "C" {
-    fn imgui_xeno_init(preInit: *const c_void, postInit: *const c_void, newFrame: *const c_void, draw: *const c_void);
-    fn imgui_xeno_bootstrap_hook(name: *const c_char, original: *const c_void) -> *const c_void;
+    fn imgui_xeno_init(post_init: *const c_void, render: *const c_void);
+    fn imgui_xeno_bootstrap_hook(name: *const c_char, original_fn: *const c_void) -> *const c_void;
+    fn imgui_xeno_add_on_pre_init(pre_init: *const c_void);
+    fn imgui_xeno_add_on_new_frame(new_frame: *const c_void);
 }
 
 extern "C" {
     fn nvnBootstrapLoader(name: *const c_char) -> *const c_void;
 }
 
-unsafe extern "C" fn imgui_preInit() {}
-unsafe extern "C" fn imgui_postInit() {}
-unsafe extern "C" fn imgui_newFrame() {}
+unsafe extern "C" fn imgui_pre_init() {}
+unsafe extern "C" fn imgui_post_init() {}
+unsafe extern "C" fn imgui_new_frame() {}
 unsafe extern "C" fn imgui_render() {}
 
 #[skyline::hook(replace = nvnBootstrapLoader)]
@@ -96,11 +104,11 @@ unsafe fn nvn_bootstrap_hook(name: u64) -> u64 {
 #[skyline::main(name = "imgui_xeno_demo")]
 pub fn main() {
     unsafe {
+        imgui_xeno_add_on_pre_init(on_imgui_pre_init as *const c_void);
+        imgui_xeno_add_on_new_frame(on_imgui_new_frame as *const c_void);
         imgui_xeno_init(
-            imgui_preInit as *const c_void,
-            imgui_postInit as *const c_void,
-            imgui_newFrame as *const c_void,
-            imgui_render as *const c_void
+            on_imgui_post_init as *const c_void,
+            on_imgui_render as *const c_void
         );
         skyline::install_hooks!(nvn_bootstrap_hook);
     }

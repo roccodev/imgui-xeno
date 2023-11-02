@@ -8,9 +8,12 @@ use skyline::libc::{c_char, c_void, size_t};
 
 #[link(name = "imgui_xeno")]
 extern "C" {
-    fn imgui_xeno_init(preInit: *const c_void, postInit: *const c_void, newFrame: *const c_void, draw: *const c_void);
+    fn imgui_xeno_init(post_init: *const c_void, render: *const c_void);
 
     fn imgui_xeno_bootstrap_hook(name: *const c_char, original_fn: *const c_void) -> *const c_void;
+
+    fn imgui_xeno_add_on_pre_init(pre_init: *const c_void);
+    fn imgui_xeno_add_on_new_frame(new_frame: *const c_void);
 
     fn imgui_xeno_set_logger(callback: *const c_void);
 
@@ -24,14 +27,14 @@ extern "C" {
     fn nvnBootstrapLoader(name: *const c_char) -> *const c_void;
 }
 
-unsafe extern "C" fn on_imgui_preInit() {
+unsafe extern "C" fn on_imgui_pre_init() {
     println!("ImGui initialization starting...");
 }
-unsafe extern "C" fn on_imgui_postInit() {
+unsafe extern "C" fn on_imgui_post_init() {
     println!("ImGui initialization complete.");
 }
 
-unsafe extern "C" fn on_imgui_newFrame() {
+unsafe extern "C" fn on_imgui_new_frame() {
     // New frame...
 }
 
@@ -62,10 +65,11 @@ pub fn main() {
         // Let's make ImGui use our logger
         //imgui_xeno_set_logger(imgui_log as *const c_void);
 
+        imgui_xeno_add_on_pre_init(on_imgui_pre_init as *const c_void);
+        imgui_xeno_add_on_new_frame(on_imgui_new_frame as *const c_void);
+
         imgui_xeno_init(
-            on_imgui_preInit as *const c_void,
-            on_imgui_postInit as *const c_void,
-            on_imgui_newFrame as *const c_void,
+            on_imgui_post_init as *const c_void,
             on_imgui_render as *const c_void
         );
     }
