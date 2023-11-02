@@ -10,10 +10,10 @@
  * of choice: Skyline, exlaunch, etc.) for the `nvnBootstrapLoader` function. The hook must call
  * `imgui_xeno_bootstrap_hook`.
  *
- * @param init the function to execute after the ImGui backend has been fully initialized
- * @param init the function to execute every frame
+ * @param postInitCallback the function to execute after the ImGui backend has been fully initialized
+ * @param renderCallback the function to execute during rendering
  */
-extern "C" void imgui_xeno_init(InitFunc init, ProcDrawFunc renderCallback);
+extern "C" void imgui_xeno_init(InitFunc postInitCallback, ProcDrawFunc renderCallback);
 
 /**
  * The function to call when `nvnBootstrapLoader` is being called by the game.
@@ -26,6 +26,20 @@ extern "C" void imgui_xeno_init(InitFunc init, ProcDrawFunc renderCallback);
  * @returns a function pointer that should be used as the hook's return value
  */
 extern "C" void* imgui_xeno_bootstrap_hook(const char *functionName, OrigNvnBootstrap origFn);
+
+/**
+ * Optionally registers a callback that is executed before the backend is initialized.
+ *
+ * @param preInitCallback the function to execute before the ImGui backend has been fully initialized
+ */
+extern "C" void imgui_xeno_add_on_pre_init(InitFunc preInitCallback);
+
+/**
+ * Optionally registers a callback that is executed just before the start of every frame.
+ *
+ * @param newFrameCallback the function to execute before every frame
+ */
+extern "C" void imgui_xeno_add_on_new_frame(NewFrameFunc newFrameCallback);
 
 /**
  * Registers a custom logging function that both ImGui and imgui-xeno can use.
